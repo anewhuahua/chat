@@ -11,10 +11,6 @@ var lib_chat = require("./lib/lib_chat")
 var onlineUser = new lib_chat.SimpleMap();
 
 app.get('/', function(req, res){
-
-  //res.writeHead(302, {'Location': 'http://192.155.85.76:2013#tyson'});
-  //res.end();
-
   res.sendFile(__dirname + '/web/chatroom.html');
 });
 
@@ -40,7 +36,11 @@ io.on('connection', function(socket){
     var message = new lib_chat.Message();
     message.onListUser(io, onlineUser);
   });
-
+  socket.on('join', function(room){
+    console.log("join "+ room);
+    var message = new lib_chat.Message();
+    message.onVedioChat(socket, io, room);
+  });
 
 });
 

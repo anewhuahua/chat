@@ -18,7 +18,6 @@ $(document).ready(function() {
   	});
   	socket.on('onListUser', function(msg){
   		$("#onlineUsers").html("");
-		console.log('helo');
 	    	var message = new lib_chat.Message();
 	    	data = message.onListUserComplete(msg);
 	    	users = data.user;
@@ -29,6 +28,16 @@ $(document).ready(function() {
 	    updateUser(users.length); 
 	    //console.log(data);
 	    //appendUser();
+  	});
+
+  	socket.on('onVedioChatCaller', function(msg){
+  		var message = new lib_chat.Message();
+  		message.onVedioChatCaller(msg);
+  	});
+
+  	socket.on('onVedioChatCallee', function(msg){
+		console.log("receive private message");
+  		appendMessage(formatVedio(msg));
   	});
 
 	function reset() {
@@ -45,10 +54,13 @@ $(document).ready(function() {
 		$("#userNo").html(""+cnt+" people online now");
 	}
 
+	 
 	function close() {
 
 	}
 
+
+   
 	$("#open").click(function(event) {
 		currentUserNick = $.trim($("#nickInput").val());
 		if('' == currentUserNick) {
@@ -79,6 +91,20 @@ $(document).ready(function() {
 		}
 	});
 
+	//$("#onlineUsers").on('click', '.friends_area', function(){
+    // 	console.log("working");
+     //str+='$("#'+ msg +'").click(function(event){var this_id = $(this).attr("id"); console.log("this_id");})';
+	//});
+
+	$(document).on('click','.friends_area',function(){
+		var this_id = $(this).attr("id");
+		console.log(this_id);
+	    if (this_id != null){
+	    	var message = new lib_chat.Message();
+			message.vedioChat(socket, this_id);
+	    }
+	});
+
 
 
 	function show(value) {
@@ -88,8 +114,13 @@ $(document).ready(function() {
 		if(!user) {
 			return '';
 		}
-		return"<span class='gray'>(" + user + ")</span> "+ new Date().format("yyyy-MM-dd hh:mm:ss") + " ";
+		return "<span class='gray'>(" + user + ")</span> "+ new Date().format("yyyy-MM-dd hh:mm:ss") + " ";
 	};
+	function formatVedio(msg) {
+		var str = "<span class='red'>(this is a vedio chat invite)</span> "+ new Date().format("yyyy-MM-dd hh:mm:ss") + " ";
+		str += "</br><span class='gray'>to join, click the link: <a href='" + msg + "'>" + msg + "</a></span>";
+		return str;
+	}
 
 	function appendMessage(msg) {
 		$("#talkFrame").append("<div>" + msg + "</div>");
@@ -97,13 +128,21 @@ $(document).ready(function() {
 
 	function appendUser(msg) {
 		//$("#onlineUsers").append("<div>" + msg + "</div>");
- 		var str = '<div class="friends_area">'+
+ 		var str = '<div class="friends_area" id="' + msg + '">'+
 				  '<img style="float: left;" src="http://demos.99points.info/fb_friends_list/images/j.jpg" alt="" height="50" />' +
 				  '<label class="name" style="float: left;">' +
 				  '<strong>'+ msg + '</strong>' +
 				  '</label></div></div>';
+
+
 		$("#onlineUsers").append(str);
+	}
+
+	function getVedioUser() {
+
 	}
 
 
 });
+
+
